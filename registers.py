@@ -37,12 +37,18 @@ def register():
         age = int(age)
     except ValueError:
         messagebox.showerror("Error", "age cannot be String")
+        return
     else:
         cursor.execute(
             "Insert into users (name, age, email, password) values(?,?,?,?)",
             [name,age, email, password ])
         conn.commit()
         messagebox.showinfo("Congratulation", "Registered Successful")
+        
+    name_var.set("")
+    email_var.set("")
+    password_var.set("")
+    age_var.set("")
 
 nameLabel = tk.Label(root, text="name", font=("Arial", 12, "bold"))
 nameLabel.pack()
