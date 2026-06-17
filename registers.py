@@ -38,12 +38,15 @@ def upload_image():
         filename = os.path.basename(file_path)
         if not os.path.exists("images"):
             os.makedirs("images")
-            new_path = f"images/{filename}"
-            shutil.copy(file_path, new_path)
-            return new_path
+        new_path = f"images/{filename}"
+        shutil.copy(file_path, new_path)
+        return new_path
+        
 def select_image():
     global image_path
     image_path = upload_image()
+    if image_path:
+        img_label.config(text="image added")
 
 def register():
     global image_path
