@@ -20,6 +20,7 @@ root = tk.Tk()
 root.geometry("400x500")
 root.title("Registration Page")
 
+register_frame = tk.Frame(root)
 name_var = tk.StringVar()
 age_var = tk.StringVar()
 email_var = tk.StringVar()
@@ -49,24 +50,49 @@ def register():
     email_var.set("")
     password_var.set("")
     age_var.set("")
+    
+def user_show():
+    register_frame.pack_forget()
+    user_frame.pack()
+    listbox.delete(0, tk.END)
+    
+    cursor.execute(
+        "Select * from users"
+    )
+    users = cursor.fetchall()
+    if len(users) == 0 :
+        listbox.insert(
+            tk.END, "No data"
+        )
+    else:
+        for user in users:
+            listbox.insert(
+                tk.END, 
+                f"{user[0]} {user[3]}"
+            )
+                 
 
-nameLabel = tk.Label(root, text="name", font=("Arial", 12, "bold"))
+nameLabel = tk.Label(register_frame, text="name", font=("Arial", 12, "bold"))
 nameLabel.pack()
-nameEntry = tk.Entry(root, textvariable=name_var, font=("Arial", 12, "bold"))
+nameEntry = tk.Entry(register_frame, textvariable=name_var, font=("Arial", 12, "bold"))
 nameEntry.pack()
-ageLabel = tk.Label(root, text="age", font=("Arial", 12, "bold"))
+ageLabel = tk.Label(register_frame, text="age", font=("Arial", 12, "bold"))
 ageLabel.pack()
-ageEntry = tk.Entry(root, textvariable=age_var, font=("Arial", 12, "bold"))
+ageEntry = tk.Entry(register_frame, textvariable=age_var, font=("Arial", 12, "bold"))
 ageEntry.pack()
-emailLabel = tk.Label(root, text="email", font=("Arial", 12, "bold"))
+emailLabel = tk.Label(register_frame, text="email", font=("Arial", 12, "bold"))
 emailLabel.pack()
-emailEntry = tk.Entry(root, textvariable=email_var, font=("Arial", 12, "bold"))
+emailEntry = tk.Entry(register_frame, textvariable=email_var, font=("Arial", 12, "bold"))
 emailEntry.pack()
-passwordLabel = tk.Label(root, text="password", font=("Arial", 12, "bold"))
+passwordLabel = tk.Label(register_frame, text="password", font=("Arial", 12, "bold"))
 passwordLabel.pack()
-passwordEntry = tk.Entry(root, textvariable=password_var, font=("Arial", 12, "bold"))
+passwordEntry = tk.Entry(register_frame, textvariable=password_var, font=("Arial", 12, "bold"))
 passwordEntry.pack()
 
 
-btn = tk.Button(root, text="submit", command= register).pack()
+btn = tk.Button(register_frame, text="submit", command= register).pack()
+
+user_frame = tk.Frame(root)
+listbox = tk.Listbox(user_frame, width="65")
+listbox.pack()
 root.mainloop()
