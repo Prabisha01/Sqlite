@@ -1,6 +1,8 @@
 import sqlite3
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
+import shutil
+import os
 
 conn = sqlite3.connect("project.db")
 cursor = conn.cursor()
@@ -11,7 +13,8 @@ cursor.execute("""
         name text,
         age integer,
         email text,
-        password text    
+        password text, 
+        image text    
     )           
     """)
 conn.commit()
@@ -20,13 +23,30 @@ root = tk.Tk()
 root.geometry("400x500")
 root.title("Registration Page")
 
+image_path = None
 register_frame = tk.Frame(root)
 name_var = tk.StringVar()
 age_var = tk.StringVar()
 email_var = tk.StringVar()
 password_var = tk.StringVar()
 
+def upload_image():
+    file_path = filedialog.askopenfilename(
+        filetypes=[("image files", "*.png *.jpg")]
+    )
+    if file_path:
+        filename = os.path.basename(file_path)
+        if not os.path.exists("images"):
+            os.makedirs("images")
+            new_path = f"images/{filename}"
+            shutil.copy(file_path, new_path)
+            return new_path
+def select_image():
+    global image_path
+    image_path = upload_image()
+
 def register():
+    global image_path
     name = name_var.get()
     age = age_var.get()
     email = email_var.get()
@@ -41,8 +61,8 @@ def register():
         return
     else:
         cursor.execute(
-            "Insert into users (name, age, email, password) values(?,?,?,?)",
-            [name,age, email, password ])
+            "Insert into users (name, age, email, password, image) values(?,?,?,?,?)",
+            [name,age, email, password, image_path ])
         conn.commit()
         messagebox.showinfo("Congratulation", "Registered Successful")
         
@@ -88,11 +108,24 @@ passwordLabel = tk.Label(register_frame, text="password", font=("Arial", 12, "bo
 passwordLabel.pack()
 passwordEntry = tk.Entry(register_frame, textvariable=password_var, font=("Arial", 12, "bold"))
 passwordEntry.pack()
+button1 = tk.Button(register_frame, text= "upload" ,command=select_image)
+button1.pack()
+img_label = tk.Label(register_frame, text="image")
+img_label.pack()
 
 
 btn = tk.Button(register_frame, text="submit", command= register).pack()
+btn1 = tk.Button(register_frame, text="view", command= user_show).pack()
 
+def back():
+    user_frame.pack_forget()
+    register_frame.pack()
+    
 user_frame = tk.Frame(root)
+btn2 = tk.Button(user_frame,text= "back" ,command=back)
+btn2.pack()
 listbox = tk.Listbox(user_frame, width="65")
 listbox.pack()
+
+register_frame.pack()
 root.mainloop()
