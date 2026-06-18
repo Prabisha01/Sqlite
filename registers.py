@@ -78,6 +78,28 @@ def edit_user():
         
         user_frame.pack_forget()
         register_frame.pack()
+        
+
+def delete_user():
+    
+    global edit_id, image_path
+    
+    selected = tree.focus()
+    if not selected:
+        messagebox.showwarning("Error", "Not selected")
+        return
+  
+    data = tree.item(selected, "values")
+    user_id = data[0]
+    
+    cursor.execute (
+        "delete from users where id = ?" ,
+        [user_id]  
+    )
+    conn.commit()
+    messagebox.showinfo("Inof", "Deleted")
+    user_show()
+    
 def register():
     global image_path
     name = name_var.get()
@@ -187,6 +209,8 @@ btn2 = tk.Button(user_frame,text= "back" ,command=back)
 btn2.pack()
 btn3 = tk.Button(user_frame, text="edit", command= edit_user)
 btn3.pack()
+btn4 = tk.Button(user_frame, text="delete", command= delete_user)
+btn4.pack()
 
 # listbox = tk.Listbox(user_frame, width="65")
 # listbox.pack()
