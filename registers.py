@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 import shutil
 import os
+from tkinter import ttk
 
 conn = sqlite3.connect("project.db")
 cursor = conn.cursor()
@@ -74,24 +75,46 @@ def register():
     password_var.set("")
     age_var.set("")
     
+# def user_show():
+#     register_frame.pack_forget()
+#     user_frame.pack()
+#     listbox.delete(0, tk.END)
+    
+#     cursor.execute(
+#         "Select * from users"
+#     )
+#     users = cursor.fetchall()
+#     if len(users) == 0 :
+#         listbox.insert(
+#             tk.END, "No data"
+#         )
+#     else:
+#         for user in users:
+#             listbox.insert(
+#                 tk.END, 
+#                 f"{user[0]} {user[3]}"
+#             )
+                 
+   
 def user_show():
     register_frame.pack_forget()
     user_frame.pack()
-    listbox.delete(0, tk.END)
+    
+    for item in tree.get_children():
+        tree.delete(item)
     
     cursor.execute(
         "Select * from users"
     )
     users = cursor.fetchall()
     if len(users) == 0 :
-        listbox.insert(
-            tk.END, "No data"
-        )
+        messagebox.showinfo("Info", "No entries")
     else:
         for user in users:
-            listbox.insert(
+            tree.insert(
+                "",
                 tk.END, 
-                f"{user[0]} {user[3]}"
+                values=(user[0], user[1],user[2], user[3] )
             )
                  
 
@@ -127,8 +150,18 @@ def back():
 user_frame = tk.Frame(root)
 btn2 = tk.Button(user_frame,text= "back" ,command=back)
 btn2.pack()
-listbox = tk.Listbox(user_frame, width="65")
-listbox.pack()
+# listbox = tk.Listbox(user_frame, width="65")
+# listbox.pack()
 
+tree = ttk.Treeview(
+    user_frame,
+    columns= ("ID", "Name", "Age" , "Email"),
+    show ="headings"
+)
+tree.heading("ID", text="ID")
+tree.heading("Name", text="Name")
+tree.heading("Age", text="Age")
+tree.heading("Email", text="Email")
+tree.pack()
 register_frame.pack()
 root.mainloop()
