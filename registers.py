@@ -25,6 +25,7 @@ root.geometry("400x500")
 root.title("Registration Page")
 
 image_path = None
+edit_id = None
 register_frame = tk.Frame(root)
 name_var = tk.StringVar()
 age_var = tk.StringVar()
@@ -49,6 +50,34 @@ def select_image():
     if image_path:
         img_label.config(text="image added")
 
+def edit_user():
+    
+    global edit_id, image_path
+    
+    selected = tree.focus()
+    if not selected:
+        messagebox.showwarning("Error", "Not selected")
+        return
+    print(selected)
+    data = tree.item(selected, "values")
+    user_id = data[0]
+    
+    cursor.execute (
+        "select * from users where id = ?" ,
+        [user_id]  
+    )
+    user = cursor.fetchone()
+    print(user)
+    if user:
+        edit_id = user[0]
+        name_var.set(user[1])
+        age_var.set(user[2])
+        email_var.set(user[3])
+        password_var.set(user[4])
+        image_path = user[5]
+        
+        user_frame.pack_forget()
+        register_frame.pack()
 def register():
     global image_path
     name = name_var.get()
@@ -63,6 +92,12 @@ def register():
     except ValueError:
         messagebox.showerror("Error", "age cannot be String")
         return
+    if edit_id:
+        cursor.execute(
+            "update users set name =?, age =?, email=?, password = ?, image = ? where id = ?",
+             [name,age, email, password, image_path , edit_id]
+        )
+        conn.commit()
     else:
         cursor.execute(
             "Insert into users (name, age, email, password, image) values(?,?,?,?,?)",
@@ -150,6 +185,9 @@ def back():
 user_frame = tk.Frame(root)
 btn2 = tk.Button(user_frame,text= "back" ,command=back)
 btn2.pack()
+btn3 = tk.Button(user_frame, text="edit", command= edit_user)
+btn3.pack()
+
 # listbox = tk.Listbox(user_frame, width="65")
 # listbox.pack()
 
